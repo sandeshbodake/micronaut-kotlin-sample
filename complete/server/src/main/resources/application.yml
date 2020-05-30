@@ -18,3 +18,24 @@ micronaut:
         mapping: "/**"  #<2>
         paths: "classpath:public" #<3>
 #end::staticResources[]
+
+micronaut:
+  security:
+    enabled: true
+    endpoints:
+      login:
+        enabled: true
+
+datasources:
+  default:
+    url: jdbc:h2:mem:devDb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: ''
+    schema-generate: CREATE_DROP
+    dialect: H2
+
+jpa:
+  default:
+    entity-scan:
+      packages: 'example.micronaut'
