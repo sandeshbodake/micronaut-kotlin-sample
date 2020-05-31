@@ -47,7 +47,7 @@ class LoginForm extends Component {
           });
         })
         .catch((error) => {
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             this.setState({
               unauthorized: true,
             });
@@ -67,7 +67,6 @@ class LoginForm extends Component {
             description="Please input correct username and password."
             type="error"
             showIcon
-            closable
             style={{ marginBottom: "3%" }}
           />
         )}

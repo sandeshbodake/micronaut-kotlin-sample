@@ -1,4 +1,4 @@
-package example.micronaut
+package example.micronaut.model
 
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
