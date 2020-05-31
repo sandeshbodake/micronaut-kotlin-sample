@@ -1,13 +1,26 @@
 package example.micronaut.model
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import javax.persistence.*
+import javax.validation.constraints.NotNull
+
 
 @Entity
-data class Book(@Id
-                @GeneratedValue
-                var id: Long,
-                var title: String,
-                var pages: Int = 0,
-                var content: String)
+@Table(name = "blog")
+class Blog {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null
+
+    @Column(name = "name", nullable = false, unique = true)
+    var name: @NotNull String? = null
+
+    constructor() {}
+
+    constructor(name: @NotNull String?) {
+        this.name = name
+    }
+
+    fun getId(): Any? {
+        return id
+    }
+}
