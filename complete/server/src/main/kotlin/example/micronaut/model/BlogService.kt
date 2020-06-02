@@ -12,4 +12,6 @@ interface BlogService {
     fun deleteById(id: Long?)
 
     fun findAll(): List<Blog?>?
+
+    fun update(id: @NotNull Long?, title: @NotNull String, sub_title: @NotNull String, content: String): Int?
 }

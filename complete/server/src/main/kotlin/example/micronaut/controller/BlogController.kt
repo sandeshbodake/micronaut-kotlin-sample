@@ -2,7 +2,6 @@ package example.micronaut.controller
 
 import example.micronaut.model.Blog
 import example.micronaut.model.BlogService
-import example.micronaut.model.BlogServiceImpl
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.*
@@ -40,6 +39,11 @@ open class BlogController {
                 .headers { headers -> headers.location(blog?.let { toUri(it) }) }
     }
 
+    @Put("/blog/{id}")
+    fun update(@Body blog: @Valid Blog): Int? {
+        return blog.sub_title?.let { blog.title?.let { it1 -> blog.content?.let { it2 -> blogService?.update(blog.id, it, it1, it2) } } }
+    }
+
     @Delete("/blog/{id}")
     open fun delete(id: Long?): HttpResponse<*>? {
         blogService?.deleteById(id)
@@ -48,6 +52,6 @@ open class BlogController {
 
 
     private fun toUri(blog: Blog): URI? {
-        return URI.create("/blog/" + blog.getId())
+        return URI.create("/blog/" + blog.id)
     }
 }

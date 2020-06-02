@@ -11,8 +11,8 @@ class Blog {
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null
 
-    @Column(name = "title", nullable = false, unique = true)
-    var title: @NotNull String? = null
+    @Column(name = "title", nullable = false)
+    var title: String? = null
 
     @Column(name = "sub_title", nullable = false)
     var sub_title: @NotNull String? = null
@@ -27,7 +27,4 @@ class Blog {
         this.content = content
     }
 
-    fun getId(): Any? {
-        return id
-    }
 }

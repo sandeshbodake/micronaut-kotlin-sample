@@ -3,16 +3,18 @@ import React, { Component } from "react";
 import { SERVER_URL } from "../config";
 import {
   PageHeader,
-  Form,
-  Button,
   Tag,
   Typography,
   Row,
   Card,
-  Modal,
-  Input,
+  Divider,
+  Empty,
+  Button,
+  notification,
 } from "antd";
-import { PlusCircleFilled } from "@ant-design/icons";
+
+import BlogForm from "./BlogForm";
+import { DeleteFilled, EditOutlined } from "@ant-design/icons";
 
 const { Paragraph } = Typography;
 
@@ -63,6 +65,33 @@ class Blog extends Component {
     this.setState({ modalVisible: modalVisible });
   }
 
+  deleteBlog = (blog_id) => {
+    var that = this;
+    axios({
+      method: "delete",
+      url: `${SERVER_URL}/blog/${blog_id}`,
+      config: { headers: { "Content-Type": "multipart/form-data" } },
+      withCredentials: true,
+      auth: {
+        username: "sherlock",
+        password: "password",
+      },
+    })
+      .then(function (response) {
+        if (response) {
+          that.fetchBlogs();
+
+          notification["success"]({
+            message: "Blog Deleted Successfully",
+          });
+        }
+      })
+      .catch(function (response) {
+        //handle error
+        console.log(response);
+      });
+  };
+
   render() {
     const { blogs } = this.state;
 
@@ -81,76 +110,72 @@ class Blog extends Component {
       );
     };
 
-    const layout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 16 },
-    };
-
     return (
       <>
-        <Card>
-          <Modal
-            title="Add New Blog"
-            centered
-            visible={this.state.modalVisible}
-            onOk={() => this.setModalVisible(false)}
-            onCancel={() => this.setModalVisible(false)}
-            okText="Submit"
-          >
-            <Form
-              {...layout}
-              name="nest-messages"
-              onFinish={this.onFinish}
-            >
-              <Form.Item
-                name={"title"}
-                label="Title of Blog"
-                rules={[{ required: true }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name={"subtitle"}
-                label="Subtitle of Blog"
-                rules={[{ required: true }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item name={"content"} label="Content">
-                <Input.TextArea rows={8} />
-              </Form.Item>
-            </Form>
-          </Modal>
-          <Button type="primary" onClick={() => this.setModalVisible(true)}>
-            <PlusCircleFilled /> New Blog
-          </Button>
+        <Card style={{ marginBottom: "5%" }} bordered={false}>
+          <BlogForm blogsHandler={this.fetchBlogs} />
         </Card>
 
         <Card style={{ width: "50%", marginLeft: "20%" }}>
-          {blogs.map((blog) => (
-            <PageHeader
-              title={blog.title}
-              className="site-page-header"
-              subTitle={blog.sub_title}
-              tags={<Tag color="blue">Running</Tag>}
-              avatar={{
-                src:
-                  "https://avatars1.githubusercontent.com/u/8186664?s=460&v=4",
+          {blogs.length === 0 && (
+            <Empty
+              image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+              imageStyle={{
+                height: 60,
               }}
             >
-              <Content
-                extraContent={
-                  <img
-                    src="https://gw.alipayobjects.com/zos/antfincdn/K%24NnlsB%26hz/pageHeader.svg"
-                    alt="content"
-                    width="100%"
-                  />
-                }
-              >
-                {content(blog.content)}
-              </Content>
-            </PageHeader>
-          ))}
+            </Empty>
+          )}
+          {blogs.length > 0 &&
+            blogs.map((blog, index) => (
+              <>
+                <PageHeader
+                  title={blog.title}
+                  className="site-page-header"
+                  subTitle={blog.sub_title}
+                  tags={<Tag color="blue">Published</Tag>}
+                  avatar={{
+                    src:
+                      "https://avatars1.githubusercontent.com/u/8186664?s=460&v=4",
+                  }}
+                  extra={[
+                    <Button
+                      key={index}
+                      value={blog.id}
+                      type="danger"
+                      onClick={() => this.deleteBlog(blog.id)}
+                    >
+                      <DeleteFilled />
+                      Delete
+                    </Button>,
+
+                    <Button
+                      key={index}
+                      value={blog.id}
+                      type="primary"
+                      // onClick={() => this.deleteBlog(blog.id)}
+                    >
+                      <EditOutlined />
+                      Edit
+                    </Button>
+                  ]}
+                >
+                  <Content
+                    extraContent={
+                      <img
+                        src="https://gw.alipayobjects.com/zos/antfincdn/K%24NnlsB%26hz/pageHeader.svg"
+                        alt="content"
+                        width="100%"
+                      />
+                    }
+                  >
+                    {content(blog.content)}
+                  </Content>
+                </PageHeader>
+
+                {index !== blogs.length - 1 && <Divider />}
+              </>
+            ))}
         </Card>
       </>
     );

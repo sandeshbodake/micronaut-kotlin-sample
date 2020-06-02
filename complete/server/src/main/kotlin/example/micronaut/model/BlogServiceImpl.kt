@@ -48,4 +48,16 @@ open class BlogServiceImpl : BlogService{
         return query.resultList
     }
 
+    @Transactional
+    override fun update(id: @NotNull Long?, title: @NotNull String, sub_title: @NotNull String, content: String): Int? {
+        val queryString = "UPDATE Blog g SET title = :title, sub_title = :sub_title, content = :content"
+        return entityManager!!.createQuery(queryString, Blog::class.java)
+                .setParameter("id", id)
+                .setParameter("title", title)
+                .setParameter("sub_title", sub_title)
+                .setParameter("content", content)
+                .executeUpdate()
+
+    }
+
 }
