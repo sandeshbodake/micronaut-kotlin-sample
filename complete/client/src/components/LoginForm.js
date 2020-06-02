@@ -4,13 +4,6 @@ import React, { Component } from "react";
 import { SERVER_URL } from "../config";
 
 class LoginForm extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      unauthorized: false,
-    };
-  }
 
   render() {
     const layout = {

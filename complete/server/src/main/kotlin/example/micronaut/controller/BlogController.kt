@@ -32,7 +32,7 @@ open class BlogController {
         return blogService?.findById(id)?.orElse(null);
     }
 
-    @Post("/blog}")
+    @Post("/blog")
     fun save(@Body blog: @Valid Blog): HttpResponse<Blog?>? {
         blogService?.save(blog)
         return HttpResponse
@@ -40,7 +40,7 @@ open class BlogController {
                 .headers { headers -> headers.location(blog?.let { toUri(it) }) }
     }
 
-    @Delete("/{id}")
+    @Delete("/blog/{id}")
     open fun delete(id: Long?): HttpResponse<*>? {
         blogService?.deleteById(id)
         return HttpResponse.noContent<Any>()
