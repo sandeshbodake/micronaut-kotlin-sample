@@ -1,6 +1,7 @@
 package example.micronaut.model
 
 import java.util.*
+import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 
@@ -13,5 +14,5 @@ interface BlogService {
 
     fun findAll(): List<Blog?>?
 
-    fun update(id: @NotNull Long?, title: @NotNull String, sub_title: @NotNull String, content: String): Int?
+    fun update(id: @NotNull Long?, title: @NotBlank String, sub_title: @NotBlank String, content: String): Int?
 }

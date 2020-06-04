@@ -11,10 +11,16 @@ import {
   Empty,
   Button,
   notification,
+  Modal,
+  Affix,
 } from "antd";
 
 import BlogForm from "./BlogForm";
-import { DeleteFilled, EditOutlined } from "@ant-design/icons";
+import {
+  DeleteFilled,
+  EditOutlined,
+  PlusCircleFilled,
+} from "@ant-design/icons";
 
 const { Paragraph } = Typography;
 
@@ -26,6 +32,14 @@ class Blog extends Component {
       blogs: [],
       unauthorized: true,
       modalVisible: false,
+      editModalVisible: false,
+      createModalVisible: false,
+      activeEditBlogId: undefined,
+      formData: {
+        title: "",
+        sub_title: "",
+        content: "",
+      },
     };
   }
 
@@ -61,10 +75,6 @@ class Blog extends Component {
 
   onFinish = (values) => {};
 
-  setModalVisible(modalVisible) {
-    this.setState({ modalVisible: modalVisible });
-  }
-
   deleteBlog = (blog_id) => {
     var that = this;
     axios({
@@ -92,9 +102,51 @@ class Blog extends Component {
       });
   };
 
+  setEditModalVisible = (editModalVisible) => {
+    this.setState({ editModalVisible: editModalVisible });
+  };
+
+  setCreateModalVisible = (createModalVisible) => {
+    this.setState({ createModalVisible: createModalVisible });
+  };
+
+  disableModal = () => {
+    this.setState({ createModalVisible: false, editModalVisible: false });
+  };
+
+  updateBlog = (blogId) => {
+    let that = this;
+    axios({
+      method: "get",
+      url: `${SERVER_URL}/blog/${blogId}`,
+      config: { headers: { "Content-Type": "multipart/form-data" } },
+      withCredentials: true,
+      auth: {
+        username: "sherlock",
+        password: "password",
+      },
+    })
+      .then(function (response) {
+        if (response) {
+          that.setEditModalVisible(true);
+          that.setState({
+            activeEditBlogId: blogId,
+          });
+          const { title, sub_title, content } = response.data;
+          that.setState({
+            formData: {
+              title: title,
+              sub_title: sub_title,
+              content: content,
+            },
+          });
+        }
+      })
+  };
+
   render() {
     const { blogs } = this.state;
-
+    let that = this;
     const content = (content) => (
       <>
         <Paragraph>{content}</Paragraph>
@@ -111,10 +163,49 @@ class Blog extends Component {
     };
 
     return (
-      <>
+      <>       
         <Card style={{ marginBottom: "5%" }} bordered={false}>
-          <BlogForm blogsHandler={this.fetchBlogs} />
+          <Affix offsetTop={20}>
+            <Button
+              type="primary"
+              onClick={() => this.setCreateModalVisible(true)}
+            >
+              <PlusCircleFilled /> New Blog
+            </Button>
+          </Affix>
         </Card>
+
+        <Modal
+          title="Add New Blog"
+          centered
+          visible={this.state.createModalVisible}
+          onCancel={() => this.setCreateModalVisible(false)}
+          cancelButtonProps={{ style: { display: "none" } }}
+          okButtonProps={{ style: { display: "none" } }}
+        >
+          <BlogForm
+            blogsHandler={this.fetchBlogs}
+            actionType={"create"}
+            disableModalHandler={this.disableModal}
+          />
+        </Modal>
+
+        <Modal
+          title="Edit Blog"
+          centered
+          visible={this.state.editModalVisible}
+          onCancel={() => that.setEditModalVisible(false)}
+          cancelButtonProps={{ style: { display: "none" } }}
+          okButtonProps={{ style: { display: "none" } }}
+        >
+          <BlogForm
+            blogsHandler={this.fetchBlogs}
+            actionType={"edit"}
+            blogId={this.state.activeEditBlogId}
+            disableModalHandler={this.disableModal}
+            formData={this.state.formData}
+          />
+        </Modal>
 
         <Card style={{ width: "50%", marginLeft: "20%" }}>
           {blogs.length === 0 && (
@@ -123,8 +214,7 @@ class Blog extends Component {
               imageStyle={{
                 height: 60,
               }}
-            >
-            </Empty>
+            ></Empty>
           )}
           {blogs.length > 0 &&
             blogs.map((blog, index) => (
@@ -140,7 +230,7 @@ class Blog extends Component {
                   }}
                   extra={[
                     <Button
-                      key={index}
+                      key={`${index}_${blog.title}_delete`}
                       value={blog.id}
                       type="danger"
                       onClick={() => this.deleteBlog(blog.id)}
@@ -150,14 +240,14 @@ class Blog extends Component {
                     </Button>,
 
                     <Button
-                      key={index}
+                      key={`${index}_${blog.title}_update`}
                       value={blog.id}
                       type="primary"
-                      // onClick={() => this.deleteBlog(blog.id)}
+                      onClick={() => this.updateBlog(blog.id)}
                     >
                       <EditOutlined />
                       Edit
-                    </Button>
+                    </Button>,
                   ]}
                 >
                   <Content

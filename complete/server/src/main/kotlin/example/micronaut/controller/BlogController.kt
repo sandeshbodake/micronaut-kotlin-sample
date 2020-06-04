@@ -40,8 +40,8 @@ open class BlogController {
     }
 
     @Put("/blog/{id}")
-    fun update(@Body blog: @Valid Blog): Int? {
-        return blog.sub_title?.let { blog.title?.let { it1 -> blog.content?.let { it2 -> blogService?.update(blog.id, it, it1, it2) } } }
+    fun update(@Body blog: @Valid Blog, id: Long): Int? {
+        return blog.title?.let { blog.sub_title?.let { it1 -> blog.content?.let { it2 -> blogService    ?.update(id, it, it1, it2) } } }
     }
 
     @Delete("/blog/{id}")

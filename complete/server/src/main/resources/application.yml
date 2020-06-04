@@ -35,6 +35,7 @@ datasources:
     username: "postgres"
     password: "postgres"
     driverClassName: ${JDBC_DRIVER:org.h2.Driver}
+    schema-generate: CREATE_DROP
 
 jpa:
   default:

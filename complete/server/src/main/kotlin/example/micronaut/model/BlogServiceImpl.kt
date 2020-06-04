@@ -8,6 +8,7 @@ import javax.inject.Singleton
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import javax.persistence.TypedQuery
+import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 @Singleton
@@ -49,15 +50,13 @@ open class BlogServiceImpl : BlogService{
     }
 
     @Transactional
-    override fun update(id: @NotNull Long?, title: @NotNull String, sub_title: @NotNull String, content: String): Int? {
-        val queryString = "UPDATE Blog g SET title = :title, sub_title = :sub_title, content = :content"
-        return entityManager!!.createQuery(queryString, Blog::class.java)
-                .setParameter("id", id)
+    override fun update(id: @NotNull Long?, title: @NotBlank String, sub_title: @NotBlank String, content: String): Int? {
+        return entityManager!!.createQuery("UPDATE Blog g SET title = :title, sub_title = :sub_title, content = :content  where id = :id")
                 .setParameter("title", title)
                 .setParameter("sub_title", sub_title)
                 .setParameter("content", content)
+                .setParameter("id", id)
                 .executeUpdate()
-
     }
 
 }
