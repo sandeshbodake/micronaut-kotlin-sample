@@ -15,3 +15,6 @@ Now your backend application will start running on [http://localhost:8080](http:
 Run `npm install` and `npm start`
 
 Launches the application on [http://locahost:3000](http://locahost:3000)
+
+
+![alt text](https://drive.google.com/file/d/13sSa8ogcjaRBj40qwuFRcQaI-_egMzsg/view?usp=sharing)
