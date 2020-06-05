@@ -49,6 +49,16 @@ open class BlogServiceImpl : BlogService{
         return query.resultList
     }
 
+    @Transactional(readOnly = true)
+    override fun search(key: String): List<Blog?>? {
+        val qlString = "SELECT e FROM Blog as e WHERE title LIKE :title OR sub_title LIKE :sub_title"
+        val query: TypedQuery<Blog> = entityManager!!.createQuery(qlString, Blog::class.java)
+                                                     .setParameter("title", key)
+                                                     .setParameter("sub_title", key)
+        query.maxResults = 50
+        return query.resultList
+    }
+
     @Transactional
     override fun update(id: @NotNull Long?, title: @NotBlank String, sub_title: @NotBlank String, content: String): Int? {
         return entityManager!!.createQuery("UPDATE Blog g SET title = :title, sub_title = :sub_title, content = :content  where id = :id")

@@ -15,4 +15,6 @@ interface BlogService {
     fun findAll(): List<Blog?>?
 
     fun update(id: @NotNull Long?, title: @NotBlank String, sub_title: @NotBlank String, content: String): Int?
+
+    fun search(key: String): List<Blog?>?
 }

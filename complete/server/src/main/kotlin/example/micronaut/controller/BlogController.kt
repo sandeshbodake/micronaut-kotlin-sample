@@ -50,6 +50,10 @@ open class BlogController {
         return HttpResponse.noContent<Any>()
     }
 
+    @Get("/search_blogs")
+    open fun search(key: String): List<Blog?>? {
+        return blogService?.search(key)
+    }
 
     private fun toUri(blog: Blog): URI? {
         return URI.create("/blog/" + blog.id)

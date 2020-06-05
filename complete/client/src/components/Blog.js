@@ -7,12 +7,13 @@ import {
   Typography,
   Row,
   Card,
-  Divider,
   Empty,
   Button,
   notification,
   Modal,
   Affix,
+  Input,
+  Col,
 } from "antd";
 
 import BlogForm from "./BlogForm";
@@ -20,6 +21,8 @@ import {
   DeleteFilled,
   EditOutlined,
   PlusCircleFilled,
+  UnorderedListOutlined,
+  HighlightOutlined
 } from "@ant-design/icons";
 
 const { Paragraph } = Typography;
@@ -71,6 +74,35 @@ class Blog extends Component {
           });
         }
       });
+  };
+
+  handleSearchChange = (e) => {
+    let that = this;
+    const { value } = e.target;
+
+    if (value.length > 0) {
+      axios
+        .get(`${SERVER_URL}/search_blogs?key=${value}`, {
+          withCredentials: true,
+          auth: {
+            username: "sherlock",
+            password: "password",
+          },
+        })
+        .then((response) => {
+          that.setState({
+            blogs: response.data,
+            unauthorized: false,
+          });
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            this.setState({
+              unauthorized: true,
+            });
+          }
+        });
+    }
   };
 
   onFinish = (values) => {};
@@ -125,23 +157,22 @@ class Blog extends Component {
         username: "sherlock",
         password: "password",
       },
-    })
-      .then(function (response) {
-        if (response) {
-          that.setEditModalVisible(true);
-          that.setState({
-            activeEditBlogId: blogId,
-          });
-          const { title, sub_title, content } = response.data;
-          that.setState({
-            formData: {
-              title: title,
-              sub_title: sub_title,
-              content: content,
-            },
-          });
-        }
-      })
+    }).then(function (response) {
+      if (response) {
+        that.setEditModalVisible(true);
+        that.setState({
+          activeEditBlogId: blogId,
+        });
+        const { title, sub_title, content } = response.data;
+        that.setState({
+          formData: {
+            title: title,
+            sub_title: sub_title,
+            content: content,
+          },
+        });
+      }
+    });
   };
 
   render() {
@@ -163,15 +194,35 @@ class Blog extends Component {
     };
 
     return (
-      <>       
-        <Card style={{ marginBottom: "5%" }} bordered={false}>
-          <Affix offsetTop={20}>
-            <Button
-              type="primary"
-              onClick={() => this.setCreateModalVisible(true)}
+      <>
+        <Card bordered={false}>
+          <Affix>
+            <Row
+              gutter={16}
+              style={{ backgroundColor: "#ffffff", padding: "20px" }}
             >
-              <PlusCircleFilled /> New Blog
-            </Button>
+              <Col span={6}>
+                <Button
+                  type="primary"
+                  onClick={() => this.setCreateModalVisible(true)}
+                >
+                  <PlusCircleFilled /> New Blog
+                </Button>
+              </Col>
+
+              <Col span={6}>
+                <Input
+                  placeholder="Search Blog Here"
+                  onChange={this.handleSearchChange}
+                />
+              </Col>
+
+              <Col span={2}>
+                <Button type="primary" icon={<UnorderedListOutlined/>} onClick={that.fetchBlogs}>
+                  Show All Blog
+                </Button>
+              </Col>
+            </Row>
           </Affix>
         </Card>
 
@@ -207,7 +258,6 @@ class Blog extends Component {
           />
         </Modal>
 
-        <Card style={{ width: "50%", marginLeft: "20%" }}>
           {blogs.length === 0 && (
             <Empty
               image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
@@ -218,16 +268,13 @@ class Blog extends Component {
           )}
           {blogs.length > 0 &&
             blogs.map((blog, index) => (
-              <>
+              <Card style={{ width: "70%", marginLeft: "20%", marginBottom: "20px" }}>
                 <PageHeader
                   title={blog.title}
                   className="site-page-header"
                   subTitle={blog.sub_title}
                   tags={<Tag color="blue">Published</Tag>}
-                  avatar={{
-                    src:
-                      "https://avatars1.githubusercontent.com/u/8186664?s=460&v=4",
-                  }}
+                  avatar={{ src: 'https://avatars1.githubusercontent.com/u/8186664?s=460&v=4' }}
                   extra={[
                     <Button
                       key={`${index}_${blog.title}_delete`}
@@ -237,7 +284,7 @@ class Blog extends Component {
                     >
                       <DeleteFilled />
                       Delete
-                    </Button>,
+                    </Button>,  
 
                     <Button
                       key={`${index}_${blog.title}_update`}
@@ -255,7 +302,6 @@ class Blog extends Component {
                       <img
                         src="https://gw.alipayobjects.com/zos/antfincdn/K%24NnlsB%26hz/pageHeader.svg"
                         alt="content"
-                        width="100%"
                       />
                     }
                   >
@@ -263,10 +309,8 @@ class Blog extends Component {
                   </Content>
                 </PageHeader>
 
-                {index !== blogs.length - 1 && <Divider />}
-              </>
+              </Card>
             ))}
-        </Card>
       </>
     );
   }

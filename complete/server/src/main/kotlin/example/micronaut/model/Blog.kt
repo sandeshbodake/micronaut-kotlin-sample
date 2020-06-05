@@ -17,7 +17,7 @@ class Blog {
     @Column(name = "sub_title", nullable = false)
     var sub_title: @NotNull String? = null
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, length=1024)
     var content: @NotNull String? = null
     constructor() {}
 
