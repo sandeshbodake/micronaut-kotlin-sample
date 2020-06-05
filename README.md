@@ -12,7 +12,7 @@ Now your backend application will start running on [http://localhost:8080](http:
 
 ## React FrontEnd
 
-`cd /cleint` and
+`cd /client` and
 Run `npm install` and `npm start`
 
 Launches the application on [http://locahost:3000](http://locahost:3000)
